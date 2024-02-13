@@ -13,6 +13,23 @@ export class AlbumRepository extends BaseRepository<Album> {
     super(Album);
   }
 
+  async updateArtistIdOfAllNullAlbum(
+    artistId: string,
+    transaction: Transaction,
+  ) {
+    return await this.update(
+      {
+        artistId: null,
+      },
+      {
+        where: {
+          artistId: artistId,
+        },
+        transaction: transaction,
+      },
+    );
+  }
+
   async updateAlbum(
     albumId: string,
     updateAlbumDto: UpdateAlbumDto,

@@ -18,5 +18,12 @@ import { FavoritesService } from './favorites.service';
     ArtistRepository,
     FavoritesRepository,
   ],
+  exports: [
+    FavoritesService,
+    TrackRepository,
+    AlbumRepository,
+    ArtistRepository,
+    FavoritesRepository,
+  ],
 })
 export class FavoritesModule {}

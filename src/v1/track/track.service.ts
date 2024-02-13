@@ -20,6 +20,7 @@ import { TrackRepository } from '../../shared/repositories/track.repository';
 import { Response } from '../../shared/response';
 import { configService } from '../../shared/services/config.service';
 import { getFromToDate } from '../../shared/utilities/get-from-to-date';
+import { FavoritesService } from '../favorites/favorites.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { FilterTrackDto } from './dto/filter-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -30,6 +31,7 @@ export class TrackService {
     private readonly trackRepository: TrackRepository,
     private readonly artistRepository: ArtistRepository,
     private readonly albumRepository: AlbumRepository,
+    private readonly favoritesService: FavoritesService,
     private sequelize: Sequelize,
   ) {}
 
@@ -289,7 +291,7 @@ export class TrackService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, transaction: Transaction) {
     let track: Track = null;
     const isUuid = configService.verifyUuid(id);
 
@@ -308,9 +310,8 @@ export class TrackService {
     }
 
     try {
-      await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.trackRepository.deleteTrack(id, transaction);
-      });
+      await this.favoritesService.removeTrack(id, transaction);
+      await this.trackRepository.deleteTrack(id, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
     }

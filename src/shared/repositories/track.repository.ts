@@ -16,6 +16,37 @@ export class TrackRepository extends BaseRepository<Track> {
     super(Track);
   }
 
+  async updateAlbumIdOfAllNullTrack(albumId: string, transaction: Transaction) {
+    return await this.update(
+      {
+        albumId: null,
+      },
+      {
+        where: {
+          albumId: albumId,
+        },
+        transaction: transaction,
+      },
+    );
+  }
+
+  async updateArtistIdOfAllNullTrack(
+    artistId: string,
+    transaction: Transaction,
+  ) {
+    return await this.update(
+      {
+        artistId: null,
+      },
+      {
+        where: {
+          artistId: artistId,
+        },
+        transaction: transaction,
+      },
+    );
+  }
+
   async updateTrack(
     trackId: string,
     updateTrackDto: UpdateTrackDto,
