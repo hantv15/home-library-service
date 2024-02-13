@@ -17,9 +17,11 @@ import { Artist } from '../../shared/models/artist.model';
 import { Pagination } from '../../shared/paginagtion';
 import { AlbumRepository } from '../../shared/repositories/album.repository';
 import { ArtistRepository } from '../../shared/repositories/artist.repository';
+import { TrackRepository } from '../../shared/repositories/track.repository';
 import { Response } from '../../shared/response';
 import { configService } from '../../shared/services/config.service';
 import { getFromToDate } from '../../shared/utilities/get-from-to-date';
+import { FavoritesService } from '../favorites/favorites.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { FilterAlbumDto } from './dto/filter-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -29,6 +31,8 @@ export class AlbumService {
   constructor(
     private readonly albumRepository: AlbumRepository,
     private readonly artistRepository: ArtistRepository,
+    private readonly trackRepository: TrackRepository,
+    private readonly favoritesService: FavoritesService,
     private sequelize: Sequelize,
   ) {}
 
@@ -231,7 +235,7 @@ export class AlbumService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, transaction: Transaction) {
     let album: Album = null;
     const isUuid = configService.verifyUuid(id);
 
@@ -250,19 +254,19 @@ export class AlbumService {
     }
 
     try {
-      await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.albumRepository.deleteAlbum(id, transaction);
-      });
-
-      return new Response({
-        data: {
-          albumId: album.id,
-        },
-        serviceId: ArtistRepository.name,
-        functionId: this.remove.name,
-      });
+      await this.favoritesService.removeAlbum(id, transaction);
+      await this.trackRepository.updateAlbumIdOfAllNullTrack(id, transaction);
+      await this.albumRepository.deleteAlbum(id, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
     }
+
+    return new Response({
+      data: {
+        albumId: album.id,
+      },
+      serviceId: ArtistRepository.name,
+      functionId: this.remove.name,
+    });
   }
 }

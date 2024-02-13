@@ -22,6 +22,8 @@ import {
 } from '@nestjs/swagger';
 
 // Local files
+import { Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { FilterTrackDto } from './dto/filter-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -30,7 +32,10 @@ import { TrackService } from './track.service';
 @Controller('track')
 @ApiTags('Tracks')
 export class TrackController {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private sequelize: Sequelize,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -94,7 +99,13 @@ export class TrackController {
   @ApiNotFoundResponse({
     description: 'Not found record',
   })
-  remove(@Param('id') id: string) {
-    return this.trackService.remove(id);
+  async remove(@Param('id') id: string) {
+    const result = await this.sequelize.transaction(
+      async (transaction: Transaction) => {
+        return await this.trackService.remove(id, transaction);
+      },
+    );
+
+    return result;
   }
 }

@@ -98,7 +98,7 @@ export class FavoritesService {
     });
   }
 
-  async removeTrack(trackId: string) {
+  async removeTrack(trackId: string, transaction: Transaction) {
     let track: Track = null;
     let favorite: Favorites = null;
     const isTrackUuid = configService.verifyUuid(trackId);
@@ -134,14 +134,12 @@ export class FavoritesService {
     );
 
     try {
-      await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.favoritesRepository.updateFavoriteTrack(
-          favorite.id,
-          newTrackIds,
-          transaction,
-        );
-        await this.trackRepository.deleteTrack(trackId, transaction);
-      });
+      await this.favoritesRepository.updateFavoriteTrack(
+        favorite.id,
+        newTrackIds,
+        transaction,
+      );
+      await this.trackRepository.deleteTrack(trackId, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -206,7 +204,7 @@ export class FavoritesService {
     });
   }
 
-  async removeAlbum(albumId: string) {
+  async removeAlbum(albumId: string, transaction: Transaction) {
     let track: Track = null;
     let favorite: Favorites = null;
     const isTrackUuid = configService.verifyUuid(albumId);
@@ -242,14 +240,12 @@ export class FavoritesService {
     );
 
     try {
-      await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.favoritesRepository.addAlbumIdToFavorite(
-          favorite.id,
-          newTrackIds,
-          transaction,
-        );
-        await this.albumRepository.deleteAlbum(albumId, transaction);
-      });
+      await this.favoritesRepository.addAlbumIdToFavorite(
+        favorite.id,
+        newTrackIds,
+        transaction,
+      );
+      await this.albumRepository.deleteAlbum(albumId, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -314,7 +310,7 @@ export class FavoritesService {
     });
   }
 
-  async removeArtist(artistId: string) {
+  async removeArtist(artistId: string, transaction: Transaction) {
     let artist: Artist = null;
     let favorite: Favorites = null;
     const isTrackUuid = configService.verifyUuid(artistId);
@@ -339,25 +335,23 @@ export class FavoritesService {
       throw new NotFoundException();
     }
 
-    const indexAlbumId = common.findIndexElementFromArray(
+    const indexArtistId = common.findIndexElementFromArray(
       favorite.artists,
       artistId,
     );
 
-    const newTrackIds = common.removeElementFromArrayAtIndex(
+    const newArtistIds = common.removeElementFromArrayAtIndex(
       favorite.artists,
-      indexAlbumId,
+      indexArtistId,
     );
 
     try {
-      await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.favoritesRepository.addAlbumIdToFavorite(
-          favorite.id,
-          newTrackIds,
-          transaction,
-        );
-        await this.artistRepository.deleteArtist(artistId, transaction);
-      });
+      await this.favoritesRepository.addAlbumIdToFavorite(
+        favorite.id,
+        newArtistIds,
+        transaction,
+      );
+      await this.artistRepository.deleteArtist(artistId, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
     }

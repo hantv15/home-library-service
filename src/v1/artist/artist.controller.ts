@@ -23,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 
 // Local files
+import { Sequelize } from 'sequelize-typescript';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { FilterArtistDto } from './dto/filter-artist.dto';
@@ -31,7 +32,10 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 @Controller('artist')
 @ApiTags('Artists')
 export class ArtistController {
-  constructor(private readonly artistService: ArtistService) {}
+  constructor(
+    private readonly artistService: ArtistService,
+    private sequelize: Sequelize,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -101,7 +105,11 @@ export class ArtistController {
   @ApiNotFoundResponse({
     description: 'Not found record',
   })
-  remove(@Param('id') id: string) {
-    return this.artistService.remove(id);
+  async remove(@Param('id') id: string) {
+    const result = await this.sequelize.transaction(async (transaction) => {
+      return await this.artistService.remove(id, transaction);
+    });
+
+    return result;
   }
 }

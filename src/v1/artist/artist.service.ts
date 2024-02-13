@@ -15,10 +15,13 @@ import { Sequelize } from 'sequelize-typescript';
 import { Op } from 'sequelize';
 import { Artist } from '../../shared/models/artist.model';
 import { Pagination } from '../../shared/paginagtion';
+import { AlbumRepository } from '../../shared/repositories/album.repository';
 import { ArtistRepository } from '../../shared/repositories/artist.repository';
+import { TrackRepository } from '../../shared/repositories/track.repository';
 import { Response } from '../../shared/response';
 import { configService } from '../../shared/services/config.service';
 import { getFromToDate } from '../../shared/utilities/get-from-to-date';
+import { FavoritesService } from '../favorites/favorites.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { FilterArtistDto } from './dto/filter-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -27,6 +30,9 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 export class ArtistService {
   constructor(
     private readonly artistRepository: ArtistRepository,
+    private readonly favoritesService: FavoritesService,
+    private readonly albumRepository: AlbumRepository,
+    private readonly trackRepository: TrackRepository,
     private sequelize: Sequelize,
   ) {}
 
@@ -190,7 +196,7 @@ export class ArtistService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, transaction: Transaction) {
     let artist: Artist = null;
     const isUuid = configService.verifyUuid(id);
 
@@ -209,19 +215,21 @@ export class ArtistService {
     }
 
     try {
-      await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.artistRepository.deleteArtist(id, transaction);
-      });
+      await this.favoritesService.removeArtist(id, transaction);
+      await this.albumRepository.updateArtistIdOfAllNullAlbum(id, transaction);
+      await this.trackRepository.updateArtistIdOfAllNullTrack(id, transaction);
 
-      return new Response({
-        data: {
-          artistId: artist.id,
-        },
-        serviceId: ArtistService.name,
-        functionId: this.remove.name,
-      });
+      await this.artistRepository.deleteArtist(id, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
     }
+
+    return new Response({
+      data: {
+        artistId: artist.id,
+      },
+      serviceId: ArtistService.name,
+      functionId: this.remove.name,
+    });
   }
 }

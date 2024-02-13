@@ -9,12 +9,17 @@ import {
 } from '@nestjs/swagger';
 
 // Local files
+import { Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { FavoritesService } from './favorites.service';
 
 @Controller('favs')
 @ApiTags('Favorites')
 export class FavoritesController {
-  constructor(private readonly favoritesService: FavoritesService) {}
+  constructor(
+    private readonly favoritesService: FavoritesService,
+    private sequelize: Sequelize,
+  ) {}
 
   @Post('track/:id')
   @ApiOkResponse({
@@ -38,8 +43,14 @@ export class FavoritesController {
   @ApiNotFoundResponse({
     description: 'Not found record',
   })
-  removeTrack(@Param('id') id: string) {
-    return this.favoritesService.removeTrack(id);
+  async removeTrack(@Param('id') id: string) {
+    const result = await this.sequelize.transaction(
+      async (transaction: Transaction) => {
+        return await this.favoritesService.removeTrack(id, transaction);
+      },
+    );
+
+    return result;
   }
 
   @Post('album/:id')
@@ -64,8 +75,14 @@ export class FavoritesController {
   @ApiNotFoundResponse({
     description: 'Not found record',
   })
-  removeAlbum(@Param('id') id: string) {
-    return this.favoritesService.removeAlbum(id);
+  async removeAlbum(@Param('id') id: string) {
+    const result = await this.sequelize.transaction(
+      async (transaction: Transaction) => {
+        return this.favoritesService.removeAlbum(id, transaction);
+      },
+    );
+
+    return result;
   }
 
   @Post('artist/:id')
@@ -90,7 +107,11 @@ export class FavoritesController {
   @ApiNotFoundResponse({
     description: 'Not found record',
   })
-  removeArtist(@Param('id') id: string) {
-    return this.favoritesService.removeArtist(id);
+  async removeArtist(@Param('id') id: string) {
+    const result = await this.sequelize.transaction(async (transaction) => {
+      return await this.favoritesService.removeArtist(id, transaction);
+    });
+
+    return result;
   }
 }
