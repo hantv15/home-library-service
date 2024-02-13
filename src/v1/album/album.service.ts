@@ -221,6 +221,14 @@ export class AlbumService {
           },
           transaction,
         );
+
+        if (artistId) {
+          await this.trackRepository.updateAlbumIdAndArtistOfTrack(
+            id,
+            artistId,
+            transaction,
+          );
+        }
       });
 
       await album.reload();
