@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  # ------------------------------------------------------------
+  # MySQL - Database
+  # ------------------------------------------------------------
+  mysql_dev:
+    image: mysql:${MYSQL_IMAGE}
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - ${LOCAL_LISTEN_ADDR}${MYSQL_CONTAINER_PORT}:3306
+    volumes:
+      - ./.docker/data/mysql:/var/lib/mysql:z
