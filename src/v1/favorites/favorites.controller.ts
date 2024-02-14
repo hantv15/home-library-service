@@ -6,6 +6,7 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -23,6 +24,7 @@ export class FavoritesController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Find all favorites' })
   @ApiOkResponse({
     description: 'Successfully all record',
   })
@@ -40,6 +42,7 @@ export class FavoritesController {
   }
 
   @Post('track/:id')
+  @ApiOperation({ summary: 'Add a track by ID to favorites' })
   @ApiOkResponse({
     description: 'Add successfully track id to favorite',
   })
@@ -54,6 +57,7 @@ export class FavoritesController {
   }
 
   @Delete('track/:id')
+  @ApiOperation({ summary: 'Delete a track by ID from favorites' })
   @ApiNoContentResponse({ description: 'Track deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',
@@ -72,6 +76,7 @@ export class FavoritesController {
   }
 
   @Post('album/:id')
+  @ApiOperation({ summary: 'Add a album by ID to favorites' })
   @ApiOkResponse({
     description: 'Add successfully Album id to favorite',
   })
@@ -86,6 +91,7 @@ export class FavoritesController {
   }
 
   @Delete('album/:id')
+  @ApiOperation({ summary: 'Delete a album by ID from favorites' })
   @ApiNoContentResponse({ description: 'Album deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',
@@ -104,6 +110,7 @@ export class FavoritesController {
   }
 
   @Post('artist/:id')
+  @ApiOperation({ summary: 'Add a artist by ID to favorites' })
   @ApiOkResponse({
     description: 'Add successfully Artist id to favorite',
   })
@@ -118,6 +125,7 @@ export class FavoritesController {
   }
 
   @Delete('artist/:id')
+  @ApiOperation({ summary: 'Delete a artist by ID from favorites' })
   @ApiNoContentResponse({ description: 'Artist deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',
