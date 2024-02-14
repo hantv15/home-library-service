@@ -30,7 +30,7 @@ import { FilterAlbumDto } from './dto/filter-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 
 @Controller('album')
-@ApiTags('Albums')
+@ApiTags('Album')
 export class AlbumController {
   constructor(
     private readonly albumService: AlbumService,

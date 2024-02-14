@@ -18,6 +18,7 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -30,7 +31,7 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackService } from './track.service';
 
 @Controller('track')
-@ApiTags('Tracks')
+@ApiTags('Track')
 export class TrackController {
   constructor(
     private readonly trackService: TrackService,
@@ -38,6 +39,7 @@ export class TrackController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create track' })
   @ApiCreatedResponse({
     description: 'The record has been successfully created',
   })
@@ -50,6 +52,7 @@ export class TrackController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Find all track' })
   @ApiOkResponse({
     description: 'Successfully all record',
   })
@@ -61,6 +64,7 @@ export class TrackController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find a track by ID' })
   @ApiOkResponse({
     description: 'Response record by ID',
   })
@@ -78,6 +82,7 @@ export class TrackController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update a track by ID' })
   @ApiOkResponse({
     description: 'Track updated password successfully',
   })
@@ -92,6 +97,7 @@ export class TrackController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a track by ID' })
   @ApiNoContentResponse({ description: 'Track deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',

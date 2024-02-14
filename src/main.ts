@@ -35,7 +35,7 @@ async function bootstrap() {
     .addTag('Favorites', 'Operations about Favorites')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('v1/api', app, document);
+  SwaggerModule.setup('v1/api/doc', app, document);
 
   await app.listen(PORT);
 }
