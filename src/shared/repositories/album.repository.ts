@@ -54,7 +54,7 @@ export class AlbumRepository extends BaseRepository<Album> {
     return await this.findOne({
       where: {
         id: { [Op.ne]: albumId },
-        name: { [Op.like]: `${nameAlbum}%` },
+        name: { [Op.like]: `${nameAlbum}` },
       },
     });
   }
@@ -105,7 +105,7 @@ export class AlbumRepository extends BaseRepository<Album> {
   async findAlbumName(nameAlbum: string) {
     return await this.findOne({
       where: {
-        name: { [Op.like]: `${nameAlbum}%` },
+        name: { [Op.like]: `${nameAlbum}` },
       },
     });
   }

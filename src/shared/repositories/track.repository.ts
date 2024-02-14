@@ -83,7 +83,7 @@ export class TrackRepository extends BaseRepository<Track> {
     return await this.findOne({
       where: {
         id: { [Op.ne]: TrackId },
-        name: { [Op.like]: `${nameTrack}%` },
+        name: { [Op.like]: `${nameTrack}` },
       },
     });
   }
@@ -115,7 +115,7 @@ export class TrackRepository extends BaseRepository<Track> {
   async findTrackName(nameTrack: string) {
     return await this.findOne({
       where: {
-        name: { [Op.like]: `${nameTrack}%` },
+        name: { [Op.like]: `${nameTrack}` },
       },
     });
   }

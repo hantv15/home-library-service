@@ -39,7 +39,9 @@ export class AlbumService {
   async create(createAlbumDto: CreateAlbumDto) {
     let album: Album = null;
     let artist: Artist = null;
-    const nameAlbum: string = createAlbumDto.name.trim().toLocaleLowerCase();
+    const nameAlbum: string =
+      createAlbumDto?.name?.toLocaleLowerCase().trim() || null;
+
     const year: number = createAlbumDto.year;
     const artistId: string | null = createAlbumDto.artistId || null;
 
@@ -108,7 +110,7 @@ export class AlbumService {
     whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
 
     if (filterAlbumDto.name) {
-      whereOptions.name = { [Op.like]: `${filterAlbumDto.name}%` };
+      whereOptions.name = { [Op.like]: `${filterAlbumDto.name}` };
     }
 
     if (filterAlbumDto.year) {
@@ -177,12 +179,16 @@ export class AlbumService {
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
     let album: Album = null;
     let artist: Artist = null;
-    const nameAlbum: string = updateAlbumDto.name.trim().toLocaleLowerCase();
+    const nameAlbum: string =
+      updateAlbumDto?.name?.toLocaleLowerCase()?.trim() || null;
     const year: number = updateAlbumDto.year;
     const artistId: string | null = updateAlbumDto.artistId || null;
 
-    const isUuid = configService.verifyUuid(id);
+    if (!nameAlbum) {
+      throw new BadRequestException();
+    }
 
+    const isUuid = configService.verifyUuid(id);
     if (!isUuid) {
       throw new BadRequestException();
     }

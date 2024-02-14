@@ -40,7 +40,8 @@ export class TrackService {
     let album: Album = null;
     let artist: Artist = null;
 
-    const trackName: string = createTrackDto.name.toLocaleLowerCase();
+    const trackName: string =
+      createTrackDto?.name?.toLocaleLowerCase().trim() || null;
     const artistId: string | null = createTrackDto.artistId || null;
     const albumId: string | null = createTrackDto.albumId || null;
 
@@ -49,6 +50,10 @@ export class TrackService {
     const duration: number = createTrackDto.duration || null;
 
     let isArtistOfAlbum: boolean = false;
+
+    if (!trackName) {
+      throw new BadRequestException();
+    }
 
     try {
       track = await this.trackRepository.findTrackName(trackName);
@@ -145,7 +150,7 @@ export class TrackService {
     whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
 
     if (filterTrackDto.name) {
-      whereOptions.name = { [Op.like]: `${filterTrackDto.name}%` };
+      whereOptions.name = { [Op.like]: `${filterTrackDto.name}` };
     }
 
     if (filterTrackDto.artistId) {
@@ -210,7 +215,8 @@ export class TrackService {
     let album: Album = null;
     let artist: Artist = null;
 
-    const trackName: string = updateTrackDto.name.toLocaleLowerCase();
+    const trackName: string =
+      updateTrackDto?.name?.toLocaleLowerCase().trim() || null;
     const artistId: string | null = updateTrackDto.artistId || null;
     const albumId: string | null = updateTrackDto.albumId || null;
 
@@ -219,6 +225,10 @@ export class TrackService {
     const duration: number = updateTrackDto.duration || null;
 
     let isArtistOfAlbum: boolean = false;
+
+    if (!trackName) {
+      throw new BadRequestException();
+    }
 
     try {
       track = await this.trackRepository.findTrackNameDifferentId(
@@ -282,7 +292,9 @@ export class TrackService {
     isArtistOfAlbum = album?.artistId !== artistId ? null : true;
 
     if (artistId && albumId && !isArtistOfAlbum) {
-      throw new NotFoundException();
+      throw new NotFoundException({
+        message: 'album or artist not match',
+      });
     }
 
     try {
