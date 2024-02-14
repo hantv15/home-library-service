@@ -35,7 +35,7 @@ export class ArtistRepository extends BaseRepository<Artist> {
     return await this.findOne({
       where: {
         id: { [Op.ne]: artistId },
-        name: { [Op.like]: `${nameArtist}%` },
+        name: { [Op.like]: `${nameArtist}` },
       },
     });
   }
@@ -67,7 +67,7 @@ export class ArtistRepository extends BaseRepository<Artist> {
   async findArtistName(nameArtist: string) {
     return await this.findOne({
       where: {
-        name: { [Op.like]: `${nameArtist}%` },
+        name: { [Op.like]: `${nameArtist}` },
       },
     });
   }

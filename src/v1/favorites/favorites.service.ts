@@ -1,6 +1,7 @@
 // Nest dependencies
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -162,6 +163,7 @@ export class FavoritesService {
     let track: Track = null;
     let favorite: Favorites = null;
     const isUuid = configService.verifyUuid(id);
+    let foundFavoriteArtist: Favorites = null;
 
     if (!isUuid) {
       throw new BadRequestException();
@@ -181,6 +183,12 @@ export class FavoritesService {
       favorite = await this.favoritesRepository.foundARecordFav();
     } catch (error) {
       throw new InternalServerErrorException();
+    }
+
+    foundFavoriteArtist = await this.favoritesRepository.findFavoriteTrack(id);
+
+    if (foundFavoriteArtist) {
+      throw new ConflictException();
     }
 
     try {
@@ -268,6 +276,7 @@ export class FavoritesService {
     let album: Album = null;
     let favorite: Favorites = null;
     const isUuid = configService.verifyUuid(albumId);
+    let foundFavoriteAlbum: Favorites = null;
 
     if (!isUuid) {
       throw new BadRequestException();
@@ -287,6 +296,13 @@ export class FavoritesService {
       favorite = await this.favoritesRepository.foundARecordFav();
     } catch (error) {
       throw new InternalServerErrorException();
+    }
+
+    foundFavoriteAlbum =
+      await this.favoritesRepository.findFavoriteAlbum(albumId);
+
+    if (foundFavoriteAlbum) {
+      throw new ConflictException();
     }
 
     try {
@@ -374,6 +390,7 @@ export class FavoritesService {
     let artist: Artist = null;
     let favorite: Favorites = null;
     const isUuid = configService.verifyUuid(artistId);
+    let foundFavoriteArtist: Favorites = null;
 
     if (!isUuid) {
       throw new BadRequestException();
@@ -393,6 +410,13 @@ export class FavoritesService {
       favorite = await this.favoritesRepository.foundARecordFav();
     } catch (error) {
       throw new InternalServerErrorException();
+    }
+
+    foundFavoriteArtist =
+      await this.favoritesRepository.findFavoriteArtist(artistId);
+
+    if (foundFavoriteArtist) {
+      throw new ConflictException();
     }
 
     try {

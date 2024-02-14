@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { BaseRepository } from './base/base.repository';
+import { FindOptions, Op, Transaction } from 'sequelize';
 import { User } from '../models/user.model';
-import { FindOptions, Transaction } from 'sequelize';
-import { Op } from 'sequelize';
+import { BaseRepository } from './base/base.repository';
 
 @Injectable()
 export class UserRepository extends BaseRepository<User> {
@@ -53,7 +52,7 @@ export class UserRepository extends BaseRepository<User> {
   async findLoginName(login: string) {
     return await this.findOne({
       where: {
-        login: { [Op.like]: `${login}%` },
+        login: { [Op.like]: `${login}` },
       },
     });
   }

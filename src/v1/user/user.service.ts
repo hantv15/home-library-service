@@ -33,7 +33,8 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto) {
     let foundLogin: User = null;
-    const loginName: string = createUserDto.login.toLocaleLowerCase();
+    const loginName: string =
+      createUserDto?.login?.toLocaleLowerCase().trim() || null;
 
     if (createUserDto.password !== createUserDto.verifyPassword) {
       throw new ForbiddenException();
@@ -98,7 +99,7 @@ export class UserService {
     whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
 
     if (filterUserDto.loginName) {
-      whereOptions.login = { [Op.like]: `${filterUserDto.loginName}%` };
+      whereOptions.login = { [Op.like]: `${filterUserDto.loginName}` };
     }
 
     const findsOptions: FindOptions = {

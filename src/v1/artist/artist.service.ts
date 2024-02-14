@@ -38,8 +38,13 @@ export class ArtistService {
 
   async create(createArtistDto: CreateArtistDto) {
     let artist: Artist = null;
-    const artistName: string = createArtistDto.name.toLocaleLowerCase();
+    const artistName: string =
+      createArtistDto?.name?.toLocaleLowerCase()?.trim() || null;
     const isGrammy: boolean = createArtistDto.grammy || false;
+
+    if (!artistName) {
+      throw new BadRequestException();
+    }
 
     try {
       artist = await this.artistRepository.findArtistName(artistName);
@@ -93,7 +98,7 @@ export class ArtistService {
     whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
 
     if (filterArtistDto.name) {
-      whereOptions.name = { [Op.like]: `${filterArtistDto.name}%` };
+      whereOptions.name = { [Op.like]: `${filterArtistDto.name}` };
     }
 
     const findsOptions: FindOptions = {
@@ -152,8 +157,14 @@ export class ArtistService {
   async update(id: string, updateArtistDto: UpdateArtistDto) {
     let artist: Artist = null;
     const isUuid = configService.verifyUuid(id);
-    const artistName: string = updateArtistDto.name.toLocaleLowerCase();
+    const artistName: string =
+      updateArtistDto?.name?.toLocaleLowerCase()?.trim() || null;
+
     const isGrammy: boolean = updateArtistDto.grammy || false;
+
+    if (!artistName) {
+      throw new BadRequestException();
+    }
 
     if (!isUuid) {
       throw new BadRequestException();
