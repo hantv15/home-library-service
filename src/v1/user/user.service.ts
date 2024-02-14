@@ -81,24 +81,24 @@ export class UserService {
   }
 
   async findAll(filterUserDto: FilterUserDto) {
-    const {
-      loginName,
-      order = 'desc',
-      orderBy = 'createdAt',
-      from,
-      to,
-      limit = configService.getEnv('LIMIT') || 12,
-      page = configService.getEnv('PAGE') || 1,
-    } = filterUserDto;
+    const whereOptions: WhereOptions = {};
+    const limit = filterUserDto?.limit ? configService.getEnv('LIMIT') : 12;
+    const page = filterUserDto?.limit ? configService.getEnv('PAGE') : 1;
 
-    const { fromDate, toDate } = getFromToDate(from, to);
+    const order = filterUserDto?.order ? filterUserDto?.order : 'desc';
+    const orderBy = filterUserDto?.orderBy
+      ? filterUserDto?.orderBy
+      : 'createdAt';
 
-    const whereOptions: WhereOptions = {
-      createdAt: { [Op.between]: [fromDate, toDate] },
-    };
+    const { fromDate, toDate } = getFromToDate(
+      filterUserDto.from,
+      filterUserDto.to,
+    );
 
-    if (loginName) {
-      whereOptions.login = { [Op.like]: `${loginName}%` };
+    whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
+
+    if (filterUserDto.loginName) {
+      whereOptions.login = { [Op.like]: `${filterUserDto.loginName}%` };
     }
 
     const findsOptions: FindOptions = {
