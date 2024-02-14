@@ -8,6 +8,8 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+
+// Local files
 import { Album } from './album.model';
 import { Artist } from './artist.model';
 

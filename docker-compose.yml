@@ -4,14 +4,14 @@ services:
   # MySQL - Database
   # ------------------------------------------------------------
   mysql_dev:
-    image: mysql:${MYSQL_IMAGE}
+    image: mysql:8.3.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      - ${LOCAL_LISTEN_ADDR}${MYSQL_CONTAINER_PORT}:3306
+      - 3306:3306
     volumes:
       - ./.docker/data/mysql:/var/lib/mysql:z

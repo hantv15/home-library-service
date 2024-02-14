@@ -7,9 +7,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-// Local files
+// Other dependencies
 import { FindOptions, Op, Transaction, WhereOptions } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
+
+// Local files
 import { Album } from '../../shared/models/album.model';
 import { Artist } from '../../shared/models/artist.model';
 import { Track } from '../../shared/models/track.model';
@@ -163,6 +165,7 @@ export class TrackService {
 
     const findsOptions: FindOptions = {
       where: whereOptions,
+      include: [{ model: Artist }, { model: Album }],
       order: [[orderBy, order]],
       limit: +limit,
       offset: +limit * (+page - 1),

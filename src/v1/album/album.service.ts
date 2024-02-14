@@ -123,6 +123,11 @@ export class AlbumService {
 
     const findsOptions: FindOptions = {
       where: whereOptions,
+      include: [
+        {
+          model: Artist,
+        },
+      ],
       order: [[orderBy, order]],
       limit: +limit,
       offset: +limit * (+page - 1),

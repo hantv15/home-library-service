@@ -18,7 +18,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "migrate:create": "npx sequelize-cli migration:generate --name",
+    "seed:up": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo",
+    "migrate:up": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed:create": "npx sequelize-cli seed:generate --name"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -32,7 +38,6 @@
     "class-validator": "^0.14.1",
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.1",
-    "js": "^0.1.0",
     "mysql2": "^3.9.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

@@ -17,6 +17,7 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -37,6 +38,7 @@ export class AlbumController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create album' })
   @ApiCreatedResponse({
     description: 'The album has been successfully created',
   })
@@ -54,6 +56,7 @@ export class AlbumController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Find all album' })
   @ApiOkResponse({
     description: 'Successfully all record',
   })
@@ -65,6 +68,7 @@ export class AlbumController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find a album by ID' })
   @ApiOkResponse({
     description: 'Response record by id',
   })
@@ -79,6 +83,7 @@ export class AlbumController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update a album by ID' })
   @ApiOkResponse({
     description: 'Album updated password successfully',
   })
@@ -93,6 +98,7 @@ export class AlbumController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a album by ID' })
   @ApiNoContentResponse({ description: 'Album deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',
