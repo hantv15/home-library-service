@@ -1,7 +1,8 @@
 // Nest dependencies
-import { Controller, Delete, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -20,6 +21,23 @@ export class FavoritesController {
     private readonly favoritesService: FavoritesService,
     private sequelize: Sequelize,
   ) {}
+
+  @Get()
+  @ApiOkResponse({
+    description: 'Successfully all record',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal Server',
+  })
+  async findAll() {
+    const result = await this.sequelize.transaction(
+      async (transaction: Transaction) => {
+        return await this.favoritesService.findAll(transaction);
+      },
+    );
+
+    return result;
+  }
 
   @Post('track/:id')
   @ApiOkResponse({

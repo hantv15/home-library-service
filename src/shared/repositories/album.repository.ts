@@ -13,6 +13,19 @@ export class AlbumRepository extends BaseRepository<Album> {
     super(Album);
   }
 
+  async findAllInIds(albumIds: string[]) {
+    return await this.findAll({
+      where: {
+        id: { [Op.in]: albumIds },
+      },
+      include: [
+        {
+          model: Artist,
+        },
+      ],
+    });
+  }
+
   async updateArtistIdOfAllNullAlbum(
     artistId: string,
     transaction: Transaction,

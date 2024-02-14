@@ -35,6 +35,37 @@ export class FavoritesService {
     private sequelize: Sequelize,
   ) {}
 
+  async findAll(transaction: Transaction) {
+    let favorite: Favorites = null;
+    let artists: Artist[] = null;
+    let tracks: Track[] = null;
+    let albums: Album[] = null;
+
+    try {
+      favorite = await this.favoritesRepository.foundARecordFav();
+
+      if (!favorite) {
+        favorite = await this.declareOneRecordFav(transaction);
+      }
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    artists = await this.artistRepository.findAllInIds(favorite.artists);
+    tracks = await this.trackRepository.findAllInIds(favorite.tracks);
+    albums = await this.albumRepository.findAllInIds(favorite.albums);
+
+    favorite.dataValues.artists = artists;
+    favorite.dataValues.tracks = tracks;
+    favorite.dataValues.albums = albums;
+
+    return new Response({
+      data: favorite,
+      serviceId: FavoritesService.name,
+      functionId: this.findAll.name,
+    });
+  }
+
   async deleteFavoriteTrackWhenTrackDelete(
     trackId: string,
     transaction: Transaction,

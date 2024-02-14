@@ -1,5 +1,6 @@
 // Other dependencies
 import {
+  BelongsTo,
   Column,
   CreatedAt,
   DataType,
@@ -7,6 +8,8 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { Album } from './album.model';
+import { Artist } from './artist.model';
 
 // Local files
 
@@ -65,4 +68,10 @@ export class Track extends Model {
     defaultValue: () => Date.now(),
   })
   updatedAt: number;
+
+  @BelongsTo(() => Artist, 'artistId')
+  artist: Artist;
+
+  @BelongsTo(() => Album, 'albumId')
+  album: Album;
 }

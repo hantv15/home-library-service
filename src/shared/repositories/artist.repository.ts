@@ -12,6 +12,14 @@ export class ArtistRepository extends BaseRepository<Artist> {
     super(Artist);
   }
 
+  async findAllInIds(artistIds: string[]) {
+    return await this.findAll({
+      where: {
+        id: { [Op.in]: artistIds },
+      },
+    });
+  }
+
   async updateArtist(
     userId: string,
     updateArtistDto: UpdateArtistDto,
