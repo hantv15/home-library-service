@@ -34,6 +34,117 @@ export class FavoritesService {
     private sequelize: Sequelize,
   ) {}
 
+  async deleteFavoriteTrackWhenTrackDelete(
+    trackId: string,
+    transaction: Transaction,
+  ) {
+    let favorite: Favorites = null;
+
+    try {
+      favorite = await this.favoritesRepository.foundARecordFav();
+
+      if (!favorite) {
+        favorite = await this.declareOneRecordFav(transaction);
+      }
+
+      const indexTrackId = common.findIndexElementFromArray(
+        favorite.tracks,
+        trackId,
+      );
+
+      const newTrackIds = common.removeElementFromArrayAtIndex(
+        favorite.tracks,
+        indexTrackId,
+      );
+
+      await this.favoritesRepository.addTrackIdToFavorite(
+        favorite.id,
+        newTrackIds,
+        transaction,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    await favorite.reload();
+
+    return favorite;
+  }
+
+  async deleteFavoriteAlbumWhenAlbumDelete(
+    albumId: string,
+    transaction: Transaction,
+  ) {
+    let favorite: Favorites = null;
+
+    try {
+      favorite = await this.favoritesRepository.foundARecordFav();
+
+      if (!favorite) {
+        favorite = await this.declareOneRecordFav(transaction);
+      }
+
+      const indexAlbumId = common.findIndexElementFromArray(
+        favorite.albums,
+        albumId,
+      );
+
+      const newAlbumIds = common.removeElementFromArrayAtIndex(
+        favorite.albums,
+        indexAlbumId,
+      );
+
+      await this.favoritesRepository.addAlbumIdToFavorite(
+        favorite.id,
+        newAlbumIds,
+        transaction,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    await favorite.reload();
+
+    return favorite;
+  }
+
+  async deleteFavoriteArtistWhenArtistDelete(
+    artistId: string,
+    transaction: Transaction,
+  ) {
+    let favorite: Favorites = null;
+
+    try {
+      favorite = await this.favoritesRepository.foundARecordFav();
+
+      if (!favorite) {
+        favorite = await this.declareOneRecordFav(transaction);
+      }
+
+      const indexArtistId = common.findIndexElementFromArray(
+        favorite.artists,
+        artistId,
+      );
+
+      const newArtistIds = common.removeElementFromArrayAtIndex(
+        favorite.artists,
+        indexArtistId,
+      );
+
+      await this.favoritesRepository.addAlbumIdToFavorite(
+        favorite.id,
+        newArtistIds,
+        transaction,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    await favorite.reload();
+
+    return favorite;
+  }
+
   async declareOneRecordFav(transaction: Transaction) {
     let favorite: Favorites = null;
 

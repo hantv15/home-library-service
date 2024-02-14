@@ -13,6 +13,18 @@ export class FavoritesRepository extends BaseRepository<Favorites> {
     super(Favorites);
   }
 
+  async findFavoriteArtist(artistId: string) {
+    return this.findOne({
+      where: {
+        [Op.and]: this.sequelize.fn(
+          'JSON_CONTAINS',
+          this.sequelize.col('artists'),
+          `\"${artistId}\"`,
+        ),
+      },
+    });
+  }
+
   async addArtistIdToFavorite(
     favId: string,
     artists: string[],

@@ -91,34 +91,32 @@ export class AlbumService {
   }
 
   async findAll(filterAlbumDto: FilterAlbumDto) {
-    const {
-      name,
-      year,
-      artistId,
-      order = 'desc',
-      orderBy = 'createdAt',
-      from,
-      to,
-      limit = configService.getEnv('LIMIT') || 12,
-      page = configService.getEnv('PAGE') || 1,
-    } = filterAlbumDto;
+    const whereOptions: WhereOptions = {};
+    const limit = filterAlbumDto?.limit ? configService.getEnv('LIMIT') : 12;
+    const page = filterAlbumDto?.limit ? configService.getEnv('PAGE') : 1;
 
-    const { fromDate, toDate } = getFromToDate(from, to);
+    const order = filterAlbumDto?.order ? filterAlbumDto?.order : 'desc';
+    const orderBy = filterAlbumDto?.orderBy
+      ? filterAlbumDto?.orderBy
+      : 'createdAt';
 
-    const whereOptions: WhereOptions = {
-      createdAt: { [Op.between]: [fromDate, toDate] },
-    };
+    const { fromDate, toDate } = getFromToDate(
+      filterAlbumDto.from,
+      filterAlbumDto.to,
+    );
 
-    if (name) {
-      whereOptions.name = { [Op.like]: `${name}%` };
+    whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
+
+    if (filterAlbumDto.name) {
+      whereOptions.name = { [Op.like]: `${filterAlbumDto.name}%` };
     }
 
-    if (year) {
-      whereOptions.year = year;
+    if (filterAlbumDto.year) {
+      whereOptions.year = filterAlbumDto.year;
     }
 
-    if (artistId) {
-      whereOptions.artistId = artistId;
+    if (filterAlbumDto.artistId) {
+      whereOptions.artistId = filterAlbumDto.artistId;
     }
 
     const findsOptions: FindOptions = {
@@ -277,7 +275,11 @@ export class AlbumService {
     }
 
     try {
-      await this.favoritesService.removeAlbum(id, transaction);
+      await this.favoritesService.deleteFavoriteAlbumWhenAlbumDelete(
+        id,
+        transaction,
+      );
+
       await this.trackRepository.updateAlbumIdOfAllNullTrack(id, transaction);
       await this.albumRepository.deleteAlbum(id, transaction);
     } catch (error) {

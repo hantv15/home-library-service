@@ -44,8 +44,6 @@ export class TrackService {
     const artistId: string | null = createTrackDto.artistId || null;
     const albumId: string | null = createTrackDto.albumId || null;
 
-    console.log(artistId);
-
     let isArtistUuid: boolean = true;
     let isAlbumUuid: boolean = true;
     const duration: number = createTrackDto.duration || null;
@@ -100,7 +98,7 @@ export class TrackService {
 
     isArtistOfAlbum = album?.artistId !== artistId ? null : true;
 
-    if (albumId && !isArtistOfAlbum) {
+    if (artistId && albumId && !isArtistOfAlbum) {
       throw new NotFoundException();
     }
 
@@ -130,34 +128,32 @@ export class TrackService {
   }
 
   async findAll(filterTrackDto: FilterTrackDto) {
-    const {
-      name,
-      artistId,
-      albumId,
-      order = 'desc',
-      orderBy = 'createdAt',
-      from,
-      to,
-      limit = configService.getEnv('LIMIT') || 12,
-      page = configService.getEnv('PAGE') || 1,
-    } = filterTrackDto;
+    const whereOptions: WhereOptions = {};
+    const limit = filterTrackDto?.limit ? configService.getEnv('LIMIT') : 12;
+    const page = filterTrackDto?.limit ? configService.getEnv('PAGE') : 1;
 
-    const { fromDate, toDate } = getFromToDate(from, to);
+    const order = filterTrackDto?.order ? filterTrackDto?.order : 'desc';
+    const orderBy = filterTrackDto?.orderBy
+      ? filterTrackDto?.orderBy
+      : 'createdAt';
 
-    const whereOptions: WhereOptions = {
-      createdAt: { [Op.between]: [fromDate, toDate] },
-    };
+    const { fromDate, toDate } = getFromToDate(
+      filterTrackDto.from,
+      filterTrackDto.to,
+    );
 
-    if (name) {
-      whereOptions.name = { [Op.like]: `${name}%` };
+    whereOptions.createdAt = { [Op.between]: [fromDate, toDate] };
+
+    if (filterTrackDto.name) {
+      whereOptions.name = { [Op.like]: `${filterTrackDto.name}%` };
     }
 
-    if (artistId) {
-      whereOptions.artistId = artistId;
+    if (filterTrackDto.artistId) {
+      whereOptions.artistId = filterTrackDto.artistId;
     }
 
-    if (albumId) {
-      whereOptions.albumId = albumId;
+    if (filterTrackDto.albumId) {
+      whereOptions.albumId = filterTrackDto.albumId;
     }
 
     const findsOptions: FindOptions = {
@@ -222,12 +218,7 @@ export class TrackService {
     let isAlbumUuid: boolean = true;
     const duration: number = updateTrackDto.duration || null;
 
-    const istTrackUuid: boolean = configService.verifyUuid(id);
     let isArtistOfAlbum: boolean = false;
-
-    if (!istTrackUuid) {
-      throw new BadRequestException();
-    }
 
     try {
       track = await this.trackRepository.findTrackNameDifferentId(
@@ -240,6 +231,16 @@ export class TrackService {
 
     if (track) {
       throw new ConflictException();
+    }
+
+    try {
+      track = await this.trackRepository.findTrackById(id);
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!track) {
+      throw new NotFoundException();
     }
 
     if (artistId) {
@@ -256,6 +257,10 @@ export class TrackService {
       throw new InternalServerErrorException();
     }
 
+    if (artistId && !artist) {
+      throw new NotFoundException();
+    }
+
     if (albumId) {
       isAlbumUuid = configService.verifyUuid(albumId);
     }
@@ -264,25 +269,25 @@ export class TrackService {
       throw new BadRequestException();
     }
 
-    if (!artist) {
-      throw new NotFoundException();
-    }
-
     try {
       album = await this.albumRepository.findAlbumById(albumId);
     } catch (error) {
       throw new InternalServerErrorException();
     }
 
-    isArtistOfAlbum = album.artistId === artistId;
+    if (albumId && !album) {
+      throw new NotFoundException();
+    }
 
-    if (!album || !isArtistOfAlbum) {
+    isArtistOfAlbum = album?.artistId !== artistId ? null : true;
+
+    if (artistId && albumId && !isArtistOfAlbum) {
       throw new NotFoundException();
     }
 
     try {
       await this.sequelize.transaction(async (transaction: Transaction) => {
-        await this.trackRepository.updateTrack(
+        return await this.trackRepository.updateTrack(
           id,
           {
             name: trackName,
@@ -293,17 +298,17 @@ export class TrackService {
           transaction,
         );
       });
-
-      await track.reload();
-
-      return new Response({
-        data: track,
-        serviceId: TrackRepository.name,
-        functionId: this.create.name,
-      });
     } catch (error) {
       throw new InternalServerErrorException();
     }
+
+    await track.reload();
+
+    return new Response({
+      data: track,
+      serviceId: TrackRepository.name,
+      functionId: this.create.name,
+    });
   }
 
   async remove(id: string, transaction: Transaction) {
@@ -325,7 +330,11 @@ export class TrackService {
     }
 
     try {
-      await this.favoritesService.removeTrack(id, transaction);
+      await this.favoritesService.deleteFavoriteTrackWhenTrackDelete(
+        id,
+        transaction,
+      );
+
       await this.trackRepository.deleteTrack(id, transaction);
     } catch (error) {
       throw new InternalServerErrorException();
