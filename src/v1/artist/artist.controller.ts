@@ -19,18 +19,21 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
-// Local files
+// Other dependencies
 import { Sequelize } from 'sequelize-typescript';
+
+// Local files
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { FilterArtistDto } from './dto/filter-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 
 @Controller('artist')
-@ApiTags('Artists')
+@ApiTags('Artist')
 export class ArtistController {
   constructor(
     private readonly artistService: ArtistService,
@@ -38,6 +41,7 @@ export class ArtistController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create artist' })
   @ApiCreatedResponse({
     description: 'The record has been successfully created',
   })
@@ -50,6 +54,7 @@ export class ArtistController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Find all artist' })
   @ApiOkResponse({
     description: 'Successfully all record',
   })
@@ -61,6 +66,7 @@ export class ArtistController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find a artist by ID' })
   @ApiOkResponse({
     description: 'Response record by id',
   })
@@ -75,6 +81,7 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update a artist by ID' })
   @ApiOkResponse({
     description: 'Artist updated information successfully',
   })
@@ -98,6 +105,7 @@ export class ArtistController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a artist by ID' })
   @ApiNoContentResponse({ description: 'Artist deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',

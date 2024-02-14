@@ -1,3 +1,4 @@
+// Nest dependencies
 import {
   Body,
   Controller,
@@ -17,8 +18,11 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+
+// Local files
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -30,6 +34,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create user' })
   @ApiCreatedResponse({
     description: 'The record has been successfully created',
   })
@@ -42,6 +47,7 @@ export class UserController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Find all user' })
   @ApiOkResponse({
     description: 'Successfully all record',
   })
@@ -53,6 +59,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find a user by ID' })
   @ApiOkResponse({
     description: 'Response record by id',
   })
@@ -67,6 +74,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update a user by ID' })
   @ApiOkResponse({
     description: 'User updated password successfully',
   })
@@ -84,6 +92,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiNoContentResponse({ description: 'User deleted successfully' })
   @ApiBadRequestResponse({
     description: 'ID is not uuid format',

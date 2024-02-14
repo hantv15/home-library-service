@@ -47,7 +47,7 @@ export class ConfigService {
       password: this.getEnv('DB_PASSWORD') || 'root',
       database: this.getEnv('DB_DATABASE') || 'test',
       models: [User, Artist, Album, Favorites, Track],
-      autoLoadModels: true,
+      autoLoadModels: false,
       synchronize: true,
       retryDelay: 3000, //ms
       retryAttempts: 10,

@@ -1,3 +1,6 @@
+# sequelize seed
+sequelize_data.json
+
 # docker
 .docker/data
 
