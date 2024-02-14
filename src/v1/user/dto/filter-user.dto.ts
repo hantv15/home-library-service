@@ -4,6 +4,10 @@ import { IsDate, IsOptional } from 'class-validator';
 import { PagingDto } from '../../../shared/dtos/paging.dto';
 
 export class FilterUserDto extends PartialType(PagingDto) {
+  @ApiPropertyOptional({ description: 'Search for login name' })
+  @IsOptional()
+  loginName: string;
+
   @ApiPropertyOptional({ description: 'Order by with property in record' })
   @IsOptional()
   orderBy: string;

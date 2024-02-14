@@ -131,6 +131,9 @@ export class TrackService {
 
   async findAll(filterTrackDto: FilterTrackDto) {
     const {
+      name,
+      artistId,
+      albumId,
       order = 'desc',
       orderBy = 'createdAt',
       from,
@@ -144,6 +147,18 @@ export class TrackService {
     const whereOptions: WhereOptions = {
       createdAt: { [Op.between]: [fromDate, toDate] },
     };
+
+    if (name) {
+      whereOptions.name = { [Op.like]: `${name}%` };
+    }
+
+    if (artistId) {
+      whereOptions.artistId = artistId;
+    }
+
+    if (albumId) {
+      whereOptions.albumId = albumId;
+    }
 
     const findsOptions: FindOptions = {
       where: whereOptions,

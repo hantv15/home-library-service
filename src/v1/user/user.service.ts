@@ -82,6 +82,7 @@ export class UserService {
 
   async findAll(filterUserDto: FilterUserDto) {
     const {
+      loginName,
       order = 'desc',
       orderBy = 'createdAt',
       from,
@@ -95,6 +96,10 @@ export class UserService {
     const whereOptions: WhereOptions = {
       createdAt: { [Op.between]: [fromDate, toDate] },
     };
+
+    if (loginName) {
+      whereOptions.login = { [Op.like]: `${loginName}%` };
+    }
 
     const findsOptions: FindOptions = {
       where: whereOptions,

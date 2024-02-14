@@ -9,6 +9,18 @@ import { IsDate, IsOptional } from 'class-validator';
 import { PagingDto } from '../../../shared/dtos/paging.dto';
 
 export class FilterAlbumDto extends PartialType(PagingDto) {
+  @ApiPropertyOptional({ description: 'Search for album name' })
+  @IsOptional()
+  name: string;
+
+  @ApiPropertyOptional({ description: 'Search for release year' })
+  @IsOptional()
+  year: number;
+
+  @ApiPropertyOptional({ description: 'Search for artist ID' })
+  @IsOptional()
+  artistId: string;
+
   @ApiPropertyOptional({ description: 'Order by with property in record' })
   @IsOptional()
   orderBy: string;
