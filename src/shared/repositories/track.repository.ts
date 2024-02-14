@@ -7,6 +7,8 @@ import { FindOptions, Op, Transaction } from 'sequelize';
 // Local files
 import { CreateTrackDto } from '../../v1/track/dto/create-track.dto';
 import { UpdateTrackDto } from '../../v1/track/dto/update-track.dto';
+import { Album } from '../models/album.model';
+import { Artist } from '../models/artist.model';
 import { Track } from '../models/track.model';
 import { BaseRepository } from './base/base.repository';
 
@@ -14,6 +16,22 @@ import { BaseRepository } from './base/base.repository';
 export class TrackRepository extends BaseRepository<Track> {
   constructor() {
     super(Track);
+  }
+
+  async findAllInIds(trackIds: string[]) {
+    return await this.findAll({
+      where: {
+        id: { [Op.in]: trackIds },
+      },
+      include: [
+        {
+          model: Artist,
+        },
+        {
+          model: Album,
+        },
+      ],
+    });
   }
 
   async updateAlbumIdAndArtistOfTrack(
