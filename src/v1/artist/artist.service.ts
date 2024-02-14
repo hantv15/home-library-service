@@ -76,6 +76,7 @@ export class ArtistService {
 
   async findAll(filterArtistDto: FilterArtistDto) {
     const {
+      name,
       order = 'desc',
       orderBy = 'createdAt',
       from,
@@ -89,6 +90,10 @@ export class ArtistService {
     const whereOptions: WhereOptions = {
       createdAt: { [Op.between]: [fromDate, toDate] },
     };
+
+    if (name) {
+      whereOptions.name = { [Op.like]: `${name}%` };
+    }
 
     const findsOptions: FindOptions = {
       where: whereOptions,

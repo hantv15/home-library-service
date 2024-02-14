@@ -92,6 +92,9 @@ export class AlbumService {
 
   async findAll(filterAlbumDto: FilterAlbumDto) {
     const {
+      name,
+      year,
+      artistId,
       order = 'desc',
       orderBy = 'createdAt',
       from,
@@ -105,6 +108,18 @@ export class AlbumService {
     const whereOptions: WhereOptions = {
       createdAt: { [Op.between]: [fromDate, toDate] },
     };
+
+    if (name) {
+      whereOptions.name = { [Op.like]: `${name}%` };
+    }
+
+    if (year) {
+      whereOptions.year = year;
+    }
+
+    if (artistId) {
+      whereOptions.artistId = artistId;
+    }
 
     const findsOptions: FindOptions = {
       where: whereOptions,
