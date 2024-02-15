@@ -12,6 +12,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      - 3306:3306
+      - ${LOCAL_LISTEN_ADDR}:${DB_PORT}:3306
     volumes:
       - ./.docker/data/mysql:/var/lib/mysql:z
