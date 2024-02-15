@@ -1,7 +1,7 @@
 // Nest dependencies
 import { Injectable } from '@nestjs/common';
 import { FindOptions, Op, Transaction } from 'sequelize';
-import { CreateAlbumDto } from '../../v1/Album/dto/create-Album.dto';
+import { CreateAlbumDto } from '../../v1/album/dto/create-album.dto';
 import { UpdateAlbumDto } from '../../v1/album/dto/update-album.dto';
 import { Album } from '../models/album.model';
 import { Artist } from '../models/artist.model';
