@@ -21,11 +21,11 @@ async function bootstrap() {
     .setDescription('The Home Library Service API description')
     .setVersion('1.0')
     .addServer(
-      `http://${configService.getEnv('LOCAL_LISTEN_ADDR')}${configService.getEnv('PORT')}`,
+      `http://${configService.getEnv('LOCAL_LISTEN_ADDR')}:${configService.getEnv('PORT')}`,
       'http',
     )
     .addServer(
-      `https://${configService.getEnv('LOCAL_LISTEN_ADDR')}${configService.getEnv('PORT')}`,
+      `https://${configService.getEnv('LOCAL_LISTEN_ADDR')}:${configService.getEnv('PORT')}`,
       'https',
     )
     .addTag('User', 'Operations about user')
