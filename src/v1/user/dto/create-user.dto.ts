@@ -11,7 +11,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsNotWhiteSpace()
-  @Matches(/^[\W_]+$/)
+  @Matches(/^[^\W_]+$/)
   @ApiProperty({
     example: 'name login',
   })
