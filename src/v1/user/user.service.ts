@@ -19,6 +19,7 @@ import { Pagination } from '../../shared/paginagtion';
 import { UserRepository } from '../../shared/repositories/user.repository';
 import { Response } from '../../shared/response';
 import { configService } from '../../shared/services/config.service';
+import errorCode from '../../shared/utilities/error-code';
 import { getFromToDate } from '../../shared/utilities/get-from-to-date';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
@@ -37,17 +38,19 @@ export class UserService {
       createUserDto?.login?.toLocaleLowerCase().trim() || null;
 
     if (createUserDto.password !== createUserDto.verifyPassword) {
-      throw new ForbiddenException();
+      throw new ForbiddenException(errorCode.VERIFY_PASSWORD.message[1]);
     }
 
     try {
       foundLogin = await this.userRepository.findLoginName(loginName);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(
+        errorCode.FIND_LOGIN_NAME_ERROR.message[1],
+      );
     }
 
     if (foundLogin) {
-      throw new ConflictException();
+      throw new ConflictException(errorCode.CONFLICT_USER.message[1]);
     }
 
     try {
@@ -77,7 +80,9 @@ export class UserService {
         functionId: this.create.name,
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(
+        errorCode.CREATE_USER_ERROR.message[1],
+      );
     }
   }
 
@@ -122,7 +127,9 @@ export class UserService {
         functionId: this.findAll.name,
       });
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(
+        errorCode.FIND_ALL_USERS.message[1],
+      );
     }
   }
 
