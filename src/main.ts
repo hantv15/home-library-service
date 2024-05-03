@@ -1,8 +1,15 @@
+// Nest Dependencies
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+// Other Dependencies
+import * as Sentry from '@sentry/node';
+
+// Local Dependencies
 import { AppModule } from './app.module';
 import { configService } from './shared/services/config.service';
+import { SentryFilter } from './shared/filters/sentry.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,6 +43,22 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('v1/api/doc', app, document);
+
+  // Init Sentry
+  Sentry.init({
+    dsn: configService.getEnv("SENTRY_DNS"),
+    enableTracing: true,
+    // Performance Monitoring
+    tracesSampleRate: 0.5 // Capture 100% of the transactions
+  })
+
+  app.useGlobalFilters(
+    new SentryFilter(),
+  );
+
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
+  app.use(Sentry.Handlers.errorHandler());
 
   await app.listen(PORT);
 }
